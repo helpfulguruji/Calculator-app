@@ -1,0 +1,1 @@
+The Android/iOS platform folders are intentionally kept minimal in this starter production tree. On the Windows PC, run `flutter create .` from the project root after installing Flutter 3.47 stable. This regenerates the standard platform boilerplate while preserving lib/, test/, pubspec.yaml and docs. Then apply the final app ID/signing/icon configuration.
