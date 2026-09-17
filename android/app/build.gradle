@@ -5,6 +5,6 @@ plugins {
 }
 
 android { namespace 'com.example.all_in_one_calculator'; compileSdk 36
-    defaultConfig { applicationId 'com.example.all_in_one_calculator'; minSdk 23; targetSdk 36; versionCode 6; versionName '1.5.0' }
+    defaultConfig { applicationId 'com.example.all_in_one_calculator'; minSdk 23; targetSdk 36; versionCode 7; versionName '1.5.1' }
 }
 flutter { source '../..' }
