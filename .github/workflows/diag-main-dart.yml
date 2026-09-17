@@ -1,0 +1,24 @@
+name: Diagnose Main Dart
+
+on:
+  push:
+    branches: ["diag-main-dart"]
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Print relevant Dart lines
+        run: nl -ba lib/main.dart | sed -n '205,285p'
+      - name: Analyze
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.0"
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze lib/main.dart
