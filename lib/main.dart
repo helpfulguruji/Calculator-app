@@ -214,7 +214,6 @@ class _ConverterPageState extends State<ConverterPage> {
 }
 
 class ToolsPage extends StatelessWidget { const ToolsPage({super.key}); @override Widget build(BuildContext context)=>ListView(padding:const EdgeInsets.all(16),children:[const SectionTitle('Everyday tools','Small tools you will actually use'),ToolCard(icon:Icons.cake_outlined,title:'Age Calculator',subtitle:'Exact age in years, months and days',onTap:()=>_open(context,const AgeCalculator())),ToolCard(icon:Icons.monitor_weight_outlined,title:'BMI Calculator',subtitle:'BMI with healthy-range guidance',onTap:()=>_open(context,const BmiCalculator())),ToolCard(icon:Icons.calendar_month_outlined,title:'Date Difference',subtitle:'Days between two dates',onTap:()=>_open(context,const DateDifferenceCalculator())),ToolCard(icon:Icons.calculate_outlined,title:'Word & Character Counter',subtitle:'Count words, characters and lines',onTap:()=>_open(context,const WordCounter())),ToolCard(icon:Icons.speed_outlined,title:'Fuel Cost Calculator',subtitle:'Trip cost from distance, mileage and fuel price',onTap:()=>_open(context,const FuelCalculator()))]); }
-}
 
 void _open(BuildContext context, Widget page) => Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
 
