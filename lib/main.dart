@@ -271,8 +271,43 @@ class BmiCalculator extends StatefulWidget { const BmiCalculator({super.key}); @
 class _BmiCalculatorState extends State<BmiCalculator>{final h=TextEditingController(text:'170'),w=TextEditingController(text:'70');double bmi=0;void calc()=>setState((){final m=(double.tryParse(h.text)??0)/100;final kg=double.tryParse(w.text)??0;bmi=m<=0?0:kg/(m*m);});String cat()=>bmi<18.5?'Underweight':bmi<25?'Healthy range':bmi<30?'Overweight':'Obesity';@override Widget build(BuildContext c)=>FormPage(title:'BMI Calculator',subtitle:'Body mass index from height and weight.',fields:[NumField('Height (cm)',h),NumField('Weight (kg)',w),FilledButton(onPressed:calc,child:const Text('Calculate'))],result:ResultCard(label:'BMI',value:bmi.toStringAsFixed(1),detail:bmi==0?'Enter your values':cat()) );}
 class DateDifferenceCalculator extends StatefulWidget { const DateDifferenceCalculator({super.key}); @override State<DateDifferenceCalculator> createState()=>_DateDifferenceCalculatorState(); }
 class _DateDifferenceCalculatorState extends State<DateDifferenceCalculator>{DateTime a=DateTime.now(),b=DateTime.now().add(const Duration(days:30));String out='30 days';void calc()=>setState(()=>out='${b.difference(a).inDays.abs()} days');@override Widget build(BuildContext c)=>FormPage(title:'Date Difference',subtitle:'Find the number of days between dates.',fields:[_dateTile(c,'Start date',a,(d)=>setState(()=>a=d)),_dateTile(c,'End date',b,(d)=>setState(()=>b=d)),FilledButton(onPressed:calc,child:const Text('Calculate'))],result:ResultCard(label:'Difference',value:out,detail:'Absolute calendar-day difference') );Widget _dateTile(BuildContext c,String t,DateTime d,ValueChanged<DateTime> f)=>ListTile(shape:RoundedRectangleBorder(borderRadius:BorderRadius.circular(12)),tileColor:Theme.of(c).colorScheme.surfaceContainerHighest,title:Text(t),subtitle:Text(DateFormat.yMMMd().format(d)),onTap:()async{final x=await showDatePicker(context:c,firstDate:DateTime(1900),lastDate:DateTime(2100),initialDate:d);if(x!=null)f(x);});}
+class WordCounterCounts {
+  final int words;
+  final int characters;
+  final int lines;
+  const WordCounterCounts({required this.words, required this.characters, required this.lines});
+}
+
+WordCounterCounts countWordCounterText(String text) {
+  final trimmed = text.trim();
+  final words = trimmed.isEmpty ? 0 : trimmed.split(RegExp(r'\s+')).length;
+  final lines = text.split('\n').where((line) => line.trim().isNotEmpty).length;
+  return WordCounterCounts(words: words, characters: text.length, lines: lines);
+}
+
 class WordCounter extends StatefulWidget { const WordCounter({super.key}); @override State<WordCounter> createState()=>_WordCounterState(); }
-class _WordCounterState extends State<WordCounter>{final c=TextEditingController();int words=0,chars=0,lines=0;void calc(){final t=c.text;setState((){chars=t.length;words=t.trim().isEmpty?0:t.trim().split(RegExp(r'\s+')).length;lines=t.isEmpty?0:t.split('\n').length;});}@override Widget build(BuildContext cxt)=>Scaffold(appBar:AppBar(title:const Text('Word Counter')),body:Padding(padding:const EdgeInsets.all(16),child:Column(children:[TextField(controller:c,maxLines:10,decoration:const InputDecoration(hintText:'Paste or type text here…',border:OutlineInputBorder())),const SizedBox(height:12),FilledButton(onPressed:calc,child:const Text('Count')),const SizedBox(height:16),Row(children:[Expanded(child:ResultCard(label:'Words',value:'$words',detail:'')),const SizedBox(width:8),Expanded(child:ResultCard(label:'Characters',value:'$chars',detail:'')),const SizedBox(width:8),Expanded(child:ResultCard(label:'Lines',value:'$lines',detail:''))])])));}
+class _WordCounterState extends State<WordCounter>{
+  final c=TextEditingController();
+  final _fieldFocus=FocusNode();
+  int words=0,chars=0,lines=0;
+
+  @override
+  void dispose() {
+    c.dispose();
+    _fieldFocus.dispose();
+    super.dispose();
+  }
+
+  Future<void> calc() async {
+    _fieldFocus.unfocus();
+    await SystemChannels.textInput.invokeMethod<void>('TextInput.hide');
+    if (!mounted) return;
+    final counted=countWordCounterText(c.text);
+    setState((){chars=counted.characters;words=counted.words;lines=counted.lines;});
+  }
+
+  @override Widget build(BuildContext cxt)=>Scaffold(appBar:AppBar(title:const Text('Word Counter')),body:ListView(padding:const EdgeInsets.all(16),children:[TextField(controller:c,focusNode:_fieldFocus,maxLines:10,decoration:const InputDecoration(hintText:'Paste or type text here…',border:OutlineInputBorder())),const SizedBox(height:12),FilledButton(onPressed:calc,child:const Text('Count')),const SizedBox(height:16),Row(children:[Expanded(child:ResultCard(label:'Words',value:'$words',detail:'')),const SizedBox(width:8),Expanded(child:ResultCard(label:'Characters',value:'$chars',detail:'')),const SizedBox(width:8),Expanded(child:ResultCard(label:'Lines',value:'$lines',detail:''))])]));
+}
 class FuelCalculator extends StatefulWidget { const FuelCalculator({super.key}); @override State<FuelCalculator> createState()=>_FuelCalculatorState(); }
 class _FuelCalculatorState extends State<FuelCalculator>{final d=TextEditingController(text:'100'),m=TextEditingController(text:'15'),p=TextEditingController(text:'100');double cost=0;void calc()=>setState(()=>cost=(double.tryParse(d.text)??0)/(double.tryParse(m.text)??1)*(double.tryParse(p.text)??0));@override Widget build(BuildContext c)=>FormPage(title:'Fuel Cost',subtitle:'Estimate the fuel cost of a trip.',fields:[NumField('Distance (km)',d),NumField('Mileage (km/l)',m),NumField('Fuel price / litre',p),FilledButton(onPressed:calc,child:const Text('Calculate'))],result:ResultCard(label:'Estimated fuel cost',value:cost.toStringAsFixed(2),detail:'Fuel needed: ${((double.tryParse(d.text)??0)/(double.tryParse(m.text)??1)).toStringAsFixed(2)} litres') );}
 
